@@ -29,10 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.plcoding.landmarkrecognitiontensorflow.data.RoadSingsFinderImpl
 import com.plcoding.landmarkrecognitiontensorflow.data.TfLiteLandmarkClassifier
 import com.plcoding.landmarkrecognitiontensorflow.domain.Classification
 import com.plcoding.landmarkrecognitiontensorflow.presentation.CameraPreview
 import com.plcoding.landmarkrecognitiontensorflow.presentation.LandmarkImageAnalyzer
+import com.plcoding.landmarkrecognitiontensorflow.presentation.RoadSignsAnalyzer
 import com.plcoding.landmarkrecognitiontensorflow.ui.theme.LandmarkRecognitionTensorflowTheme
 
 class MainActivity : ComponentActivity() {
@@ -58,12 +60,28 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 }
+
+                val roadSingsAnalyzer = remember {
+                    RoadSignsAnalyzer(
+                        roadSingsFinder = RoadSingsFinderImpl(
+                            context = applicationContext
+                        ),
+                        onResults = {
+                            println("victor: $it")
+                        }
+                    )
+                }
+
                 val controller = remember {
                     LifecycleCameraController(applicationContext).apply {
                         setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
+//                        setImageAnalysisAnalyzer(
+//                            ContextCompat.getMainExecutor(applicationContext),
+//                            analyzer
+//                        )
                         setImageAnalysisAnalyzer(
                             ContextCompat.getMainExecutor(applicationContext),
-                            analyzer
+                            roadSingsAnalyzer
                         )
                     }
                 }
